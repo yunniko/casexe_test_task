@@ -4,6 +4,8 @@
  * User: Vaara
  * Date: 31.03.2019
  * Time: 16:05
+
+ * @property \app\models\ActiveRecord\Wins $_object
  */
 
 namespace app\models\prizes;
@@ -19,32 +21,33 @@ class Bonus implements PrizeInterface {
     private $_object;
 
     public function isAccepted() {
-        $this->getObject()->isAcepted;
+        $this->_object->isAcepted;
     }
     public function isDeclined() {
-        $this->getObject()->isDeclined;
+        $this->_object->isDeclined;
     }
     public function isSent() {
-        $this->getObject()->isSent;
+        $this->_object->isSent;
     }
 
     public function accept(){
-        $this->getObject()->accept();
-        $this->getObject()->send();
+        if ($this->_object->accept()) return $this->_object->send();
+
+        return false;
     }
     public function decline(){
-        $this->getObject()->decline();
+        return $this->_object->decline();
     }
 
     public function send(){
-        $this->getObject()->send();
+        return $this->_object->send();
     }
 
     public function getDescription(){
-        $this->getObject()->name();
+        return $this->_object->description();
     }
 
-    public static function create(Wins $value) {
+    public static function create($value) {
         $bonus = Bonuses::create($value);
         return static::get(Wins::create($bonus));
     }
@@ -55,12 +58,12 @@ class Bonus implements PrizeInterface {
         return $result;
     }
 
-    public function getObject() {
-        return $this->_object;
+    public function getId() {
+        return $this->_object->id;
     }
 
     public function assignTo(PrizeRecipientInterface $gamer)
     {
-        return $this->getObject()->setRecipient($gamer);
+        return $this->_object->setRecipient($gamer);
     }
 }
