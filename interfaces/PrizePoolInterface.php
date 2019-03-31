@@ -8,7 +8,7 @@
 
 namespace app\interfaces;
 
-interface PrizePullInterface{
+interface PrizePoolInterface{
     public function getRandom();
 
     public function isAvailable();
