@@ -8,12 +8,13 @@
 
 namespace app\models;
 
-use app\interfaces\PrizePullInterface;
+use app\interfaces\PrizePoolInterface;
+use app\interfaces\PrizeRecipientInterface;
 
 class Game {
     private $_prizeGenerators = [];
 
-    public function generate(){
+    private function generate(){
         $generator = $this->getRandomPrizeGenerator();
         $prize = null;
         if($generator !== null) {
@@ -22,7 +23,7 @@ class Game {
         return $prize;
     }
 
-    public function registerPrizeGenerator(PrizePullInterface $prize) {
+    public function registerPrizeGenerator(PrizePoolInterface $prize) {
         if (!in_array($prize, $this->_prizeGenerators)) $this->_prizeGenerators[] = $prize;
         return $this;
     }
@@ -44,6 +45,11 @@ class Game {
             $result = $generators[$n];
         }
         return $result;
+    }
+
+    public function start(PrizeRecipientInterface $gamer) {
+        $prize = $this->generate();
+        $prize->assignTo($gamer);
     }
 
 }
