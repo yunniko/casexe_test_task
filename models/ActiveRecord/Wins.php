@@ -3,6 +3,8 @@
 namespace app\models\ActiveRecord;
 
 use app\interfaces\PrizeARInterface;
+use app\interfaces\PrizeRecipientInterface;
+use app\models\User;
 use Yii;
 
 /**
@@ -60,6 +62,10 @@ class Wins extends \yii\db\ActiveRecord
         return $this->hasOne(Objects::class, ['id' => 'prize_id'])->andOnCondition(['prize_type' => Objects::getPrizeType()]);
     }
 
+    public function getRecipientData() {
+        return $this->hasOne(User::class, ['id' => 'recipient_id']);
+    }
+
     public static function create(PrizeARInterface $prize) {
         $result = new static;
         $result->setAttribute('prize_type', get_class($prize)::getPrizeType());
@@ -74,20 +80,25 @@ class Wins extends \yii\db\ActiveRecord
     }
 
     public function accept() {
-        $this->prizeData->accept();
+        $this->prizeData->accept($this->recipientData);
         return $this->updateStatus('accepted');
     }
     public function decline() {
-        $this->prizeData->decline();
+        $this->prizeData->decline($this->recipientData);
         return $this->updateStatus('declined');
     }
     public function send() {
-        $this->prizeData->send();
+        $this->prizeData->send($this->recipientData);
         return $this->updateStatus('sent');
     }
 
     private function updateStatus($status) {
         $this->setAttribute('status', $status);
         return $this->updateAttributes(['status']);
+    }
+
+    public function setRecipient(PrizeRecipientInterface $recipient) {
+        $this->setAttributes(['recipient_id' => $recipient->id, 'status' => 'assigned']);
+        return $this->updateAttributes(['recipient_id', 'status']);
     }
 }

@@ -10,6 +10,7 @@ namespace app\models\prizes;
 
 use app\interfaces\PrizeARInterface;
 use app\interfaces\PrizeInterface;
+use app\interfaces\PrizeRecipientInterface;
 use app\models\ActiveRecord\Bonuses;
 use app\models\ActiveRecord\Wins;
 
@@ -29,6 +30,7 @@ class Bonus implements PrizeInterface {
 
     public function accept(){
         $this->getObject()->accept();
+        $this->getObject()->send();
     }
     public function decline(){
         $this->getObject()->decline();
@@ -55,5 +57,10 @@ class Bonus implements PrizeInterface {
 
     public function getObject() {
         return $this->_object;
+    }
+
+    public function assignTo(PrizeRecipientInterface $gamer)
+    {
+        return $this->getObject()->setRecipient($gamer);
     }
 }
