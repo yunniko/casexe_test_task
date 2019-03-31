@@ -4,6 +4,8 @@ namespace app\models\ActiveRecord;
 
 use app\interfaces\PrizeARInterface;
 use app\interfaces\PrizeRecipientInterface;
+use app\models\prizes\Bonus;
+use app\models\prizes\Object;
 use app\models\User;
 use Yii;
 
@@ -53,13 +55,13 @@ class Wins extends \yii\db\ActiveRecord
     }
 
     public function getBonusData() {
-        return $this->hasOne(Bonuses::class, ['id' => 'prize_id'])->andOnCondition(['prize_type' => Bonuses::getPrizeType()]);
+        return $this->hasOne(Bonuses::class, ['id' => 'prize_id']);
     }
     public function getMoneyData() {
-        return $this->hasOne(Money::class, ['id' => 'prize_id'])->andOnCondition(['prize_type' => Money::getPrizeType()]);
+        return $this->hasOne(Money::class, ['id' => 'prize_id']);
     }
     public function getObjectData() {
-        return $this->hasOne(Objects::class, ['id' => 'prize_id'])->andOnCondition(['prize_type' => Objects::getPrizeType()]);
+        return $this->hasOne(Objects::class, ['id' => 'prize_id']);
     }
 
     public function getRecipientData() {
@@ -75,8 +77,14 @@ class Wins extends \yii\db\ActiveRecord
     }
 
     public function getPrizeData() {
-        $prize = array_filter($this->bonusData, $this->moneyData, $this->objectData);
-        return array_pop($prize);
+        foreach ([
+            $this->bonusData,
+            $this->moneyData,
+            $this->objectData
+                 ] as $obj) {
+            if ($this->prize_type === $obj->getPrizeType()) return $obj;
+        }
+        return null;
     }
 
     public function accept() {
@@ -100,5 +108,18 @@ class Wins extends \yii\db\ActiveRecord
     public function setRecipient(PrizeRecipientInterface $recipient) {
         $this->setAttributes(['recipient_id' => $recipient->id, 'status' => 'assigned']);
         return $this->updateAttributes(['recipient_id', 'status']);
+    }
+
+    public function description() {
+        return $this->prizeData->getDescription();
+    }
+
+    public function getModel() {
+        switch($this->prize_type) {
+            case 'bonus': return Bonus::get($this);
+            case 'money': return Money::get($this);
+            case 'object': return Object::get($this);
+            default: return null;
+        }
     }
 }

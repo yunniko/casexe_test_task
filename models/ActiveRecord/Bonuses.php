@@ -62,7 +62,9 @@ class Bonuses extends \yii\db\ActiveRecord implements PrizeARInterface
         return true;
     }
     public function send(PrizeRecipientInterface $recepient) {
-        $recepient->addBonus($this->value);
-        return true;
+        return $recepient->addBonus($this->value);
+    }
+    public function getDescription() {
+        return $this->value !== 1 ? "$this->value bonuses" : '1 bonus';
     }
 }

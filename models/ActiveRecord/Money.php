@@ -3,6 +3,7 @@
 namespace app\models\ActiveRecord;
 
 use app\interfaces\PrizeARInterface;
+use app\interfaces\PrizeRecipientInterface;
 use Yii;
 
 /**
@@ -48,5 +49,16 @@ class Money extends \yii\db\ActiveRecord implements PrizeARInterface
     public static function getPrizeType()
     {
         return 'money';
+    }
+
+    public function accept(PrizeRecipientInterface $recepient) {
+        return true;
+    }
+    public function decline(PrizeRecipientInterface $recepient) {
+        return true;
+    }
+    public function send(PrizeRecipientInterface $recepient) {
+        $recepient->addMoney($this->value);
+        return true;
     }
 }
