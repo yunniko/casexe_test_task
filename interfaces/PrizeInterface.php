@@ -12,9 +12,11 @@ interface PrizeInterface{
     public function accept();
     public function isAccepted();
     public function decline();
-
+    public function isDeclined();
     public function send();
     public function isSent();
+
+    public function assignTo(PrizeRecipientInterface $gamer);
 
     public function getDescription();
 }
