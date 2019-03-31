@@ -41,7 +41,7 @@ class Game {
         $count = count($generators);
         $result = null;
         if($count > 0) {
-            $n = mt_rand(0, $count);
+            $n = mt_rand(0, $count - 1);
             $result = $generators[$n];
         }
         return $result;
@@ -50,6 +50,7 @@ class Game {
     public function start(PrizeRecipientInterface $gamer) {
         $prize = $this->generate();
         $prize->assignTo($gamer);
+        return $prize;
     }
 
 }
