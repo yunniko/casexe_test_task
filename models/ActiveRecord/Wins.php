@@ -117,7 +117,7 @@ class Wins extends \yii\db\ActiveRecord
     public function getModel() {
         switch($this->prize_type) {
             case 'bonus': return Bonus::get($this);
-            case 'money': return Money::get($this);
+            case 'money': return \app\models\prizes\Money::get($this);
             case 'object': return Object::get($this);
             default: return null;
         }

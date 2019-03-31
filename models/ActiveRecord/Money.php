@@ -31,6 +31,7 @@ class Money extends \yii\db\ActiveRecord implements PrizeARInterface
         return [
             [['value'], 'integer'],
             [['currency'], 'string', 'max' => 255],
+            [['currency'], 'default', 'value' => 'euro']
         ];
     }
 
@@ -60,5 +61,14 @@ class Money extends \yii\db\ActiveRecord implements PrizeARInterface
     public function send(PrizeRecipientInterface $recepient) {
         $recepient->addMoney($this->value);
         return true;
+    }
+    public static function create($value) {
+        $object = new static();
+        $object->setAttribute('value', $value);
+        if($object->save()) return $object;
+        return null;
+    }
+    public function getDescription() {
+        return $this->value !== 1 ? "$this->value {$this->currency}s" : "1 {$this->currency}";
     }
 }

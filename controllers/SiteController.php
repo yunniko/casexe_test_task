@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\ActiveRecord\Wins;
 use app\models\Game;
 use app\models\prizes\BonusPool;
+use app\models\prizes\MoneyPool;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
@@ -69,7 +70,8 @@ class SiteController extends Controller
         $generate = Yii::$app->request->post('generate');
         if($generate) {
             $game = new Game();
-            $game->registerPrizeGenerator(new BonusPool());
+            MoneyPool::setAvailable(2000);
+            $game->registerPrizeGenerator(new BonusPool())->registerPrizeGenerator(new MoneyPool());
             $prize = $game->start(Yii::$app->user->identity);
             $params['prize']  = $prize;
         }
