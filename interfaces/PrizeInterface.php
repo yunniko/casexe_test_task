@@ -19,4 +19,5 @@ interface PrizeInterface{
     public function assignTo(PrizeRecipientInterface $gamer);
 
     public function getDescription();
+    public function getId();
 }
