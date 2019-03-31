@@ -2,6 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\ActiveRecord\Wins;
+use app\models\Game;
+use app\models\prizes\BonusPool;
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -61,7 +65,27 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $params = [];
+        $generate = Yii::$app->request->post('generate');
+        if($generate) {
+            $game = new Game();
+            $game->registerPrizeGenerator(new BonusPool());
+            $prize = $game->start(Yii::$app->user->identity);
+            $params['prize']  = $prize;
+        }
+
+        $prizeId = Yii::$app->request->post('prize_id');
+        if($prizeId) {
+            $prize = Wins::findOne($prizeId)->getModel();
+            if(Yii::$app->request->post('prize_action') == 'decline') $prize->decline();
+            elseif(Yii::$app->request->post('prize_action') == 'accept') $prize->accept();
+        }
+
+        if(!Yii::$app->user->isGuest) {
+            $user = User::findOne(Yii::$app->user->id);
+            $params['user'] = $user;
+        }
+        return $this->render('index', $params);
     }
 
     /**

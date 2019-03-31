@@ -5,49 +5,36 @@
 $this->title = 'My Yii Application';
 ?>
 <div class="site-index">
+    <?php if(Yii::$app->user->isGuest): ?>
+        Login required (user1/password, user2/password)
+    <?php else: ?>
+        <?php $allowedGain = $user->allowedGain ?>
 
-    <div class="jumbotron">
-        <h1>Congratulations!</h1>
+        <?= $user->name ?><br>
+        Bonuses: <?= $user->bonuses ?><br>
+        Money: <?= $user->money ?><br>
 
-        <p class="lead">You have successfully created your Yii-powered application.</p>
+        <?php if(!empty($allowedGain)): ?>
+            <?php foreach($allowedGain as $gain): ?>
+                <?= $gain->getDescription() ?>
+                <?php $form = \yii\bootstrap\ActiveForm::begin([
+                    'method' => 'post'
+                ]) ?>
+                <input type="hidden" name='prize_id' value="<?= $gain->getId() ?>">
+                <input type="radio" name="prize_action" value="accept"> Забрать
+                <input type="radio" name="prize_action" value="decline"> Отказаться
+                <button>Ok</button>
+                <?php \yii\bootstrap\ActiveForm::end(); ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
 
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
+        <?php $form = \yii\bootstrap\ActiveForm::begin([
+                'method' => 'post'
+        ]) ?>
 
-    <div class="body-content">
+            <input type="hidden" name="generate" value="1">
+            <button name="generate">Generate</button>
+        <?php \yii\bootstrap\ActiveForm::end(); ?>
+    <?php endif; ?>
 
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
-        </div>
-
-    </div>
 </div>
