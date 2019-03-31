@@ -2,9 +2,10 @@
 
 namespace app\models;
 
+use app\interfaces\PrizeRecipientInterface;
 use yii\db\ActiveRecord;
 
-class User extends ActiveRecord implements \yii\web\IdentityInterface
+class User extends ActiveRecord implements \yii\web\IdentityInterface, PrizeRecipientInterface
 {
     public $password = 'password';
 
@@ -12,6 +13,12 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     public static function tableName()
     {
         return 'users';
+    }
+    public function rules()
+    {
+        return [
+            [['bonuses', 'money'], 'integer'],
+        ];
     }
 
     /**
@@ -74,5 +81,26 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     public function validatePassword($password)
     {
         return $this->password === $password;
+    }
+
+    public function addBonus($value) {
+        $this->bonuses += $value;
+        return $this->updateAttributes(['bonuses']);
+    }
+    public function addMoney($value) {
+        $this->money += $value;
+        return $this->updateAttributes(['money']);
+    }
+
+    public function getWinsAssignedDataset() {
+        return $this->hasMany(\app\models\ActiveRecord\Wins::class, ['recipient_id' => 'id'])->andOnCondition(['status' => 'assigned']);
+    }
+
+    public function getAllowedGain() {
+        $result = [];
+        foreach ($this->winsAssignedDataset as $win) {
+            $result[] = $win->getModel();
+        }
+        return $result;
     }
 }
